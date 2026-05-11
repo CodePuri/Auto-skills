@@ -1,150 +1,124 @@
 ---
 name: auto-skills
-description: Use when the user asks to discover, refresh, recommend, install, or automate agent skills; identify missing capabilities for a task; or decide whether a specialized skill would improve current or future work. Uses the Auto Skills CLI with strict trust checks and mandatory user approval for installation.
+description: Automatically discover, refresh, recommend, and safely install agent skills using the Auto Skills CLI. Pre-seeded with 14 core skills across frontend, backend, QA, design, architecture, and planning. Supports 3-tier trigger system (prefix, config, env).
 ---
 
 # Auto Skills
 
-Use the Auto Skills CLI to aggregate local and remote agent skills, infer task intent, rank candidates, and safely recommend skills that may improve a task.
+Automatically discover, refresh, recommend, and safely install agent skills using the Auto Skills CLI. Plug-and-play agent intelligence.
 
-## Locate the CLI
+## CLI Entry
 
-Before running commands, locate the CLI in this order:
-
-1. If `AUTO_SKILLS_CLI` is set, run `node "$AUTO_SKILLS_CLI" ...`.
-2. If `skill-aggregator` is on `PATH`, run `skill-aggregator ...`.
-3. If a local checkout exists, run `node <repo>/dist/cli.js ...`.
-   Common checkout paths include `~/Code/auto-skills`, `~/Desktop/Code/auto-skills`, and the current repository root.
-
-If the CLI is missing, tell the user to install it:
+The CLI can be invoked in several ways (in order of preference):
 
 ```bash
-git clone https://github.com/CodePuri/Auto-skills.git ~/Code/auto-skills
-cd ~/Code/auto-skills
-npm install
-npm run build
+# If installed globally
+autoskills <command> [options]
+
+# Via npx
+npx autoskills <command> [options]
+
+# If the repo is cloned locally
+node /path/to/auto-skills/dist/cli.js <command> [options]
 ```
 
-Use SSH instead if the user prefers it:
+## Safety First: Guarded Installation
 
-```bash
-git clone git@github.com:CodePuri/Auto-skills.git ~/Code/auto-skills
-```
+**CRITICAL RULE:** Discovery and suggestion are permitted automatically, but **installation must explicitly be guarded**. Never install a skill without explicit user confirmation after presenting trust metrics.
+
+### Trust & Safety Guidelines
+
+1. **Reputation Check**: Before recommending a skill, verify its metadata:
+   - **Install Count**: Prefer skills with high install counts (e.g., >1,000).
+   - **Source Reputation**: Trust official or well-known organizations (`vercel-labs`, `anthropics`, `codepuri`).
+   - **Score/Reason**: Pay attention to the `score` and `reason` provided by the CLI.
+2. **Mandatory Review**: Always present the skill's name, description, source URL, and why it's being recommended.
+3. **Explicit Consent**: Ask: *"I found the '[skill-name]' skill which helps with [task]. Would you like me to install it?"*
+4. **No Background Installs**: Never use flags that bypass confirmation unless the user has given explicit permission.
 
 ## Commands
 
 ```bash
-skill-aggregator refresh
-skill-aggregator refresh --network
-skill-aggregator refresh --dry-run
-skill-aggregator suggest --task "<task>" --json
-skill-aggregator suggest --task "<task>" --json --offline
-skill-aggregator install <candidate-id> --dry-run
-skill-aggregator install <candidate-id>
-skill-aggregator hook --task "<task>" --json --offline
+# Initialize — first-run setup, register bundled skills, check environment
+autoskills init
+
+# Health check — diagnostics, Node version, cache status
+autoskills doctor
+
+# Refresh cache — scan bundled + local skills
+autoskills refresh
+autoskills refresh --network
+
+# Suggest — find and rank skills for a task
+autoskills suggest --task "react performance testing"
+autoskills suggest --task "react performance testing" --json
+autoskills suggest --task "react performance testing" --offline
+
+# Install — safety-gated skill installation
+autoskills install <candidate-id>
+autoskills install <candidate-id> -y
+autoskills install <candidate-id> --dry-run
+
+# Hook — agent trigger check (returns JSON)
+autoskills hook --task "build a polished dashboard UI" --json
+
+# List all cached/bundled skills
+autoskills list
+
+# Seed — register all bundled skills into cache
+autoskills seed
+
+# Clear cache
+autoskills clean
+
+# Show configuration
+autoskills config
 ```
 
-If using a direct script path, replace `skill-aggregator` with `node <repo>/dist/cli.js`.
+## Three-Tier Trigger System
 
-## Workflow
+### Tier 1: Prompt Prefix
+When the user starts a prompt with `auto skills:`, immediately:
+1. Extract the task after the colon
+2. Run: `autoskills hook --task "<task>" --json`
+3. Present the top candidates to the user
+4. If the user approves, install high-confidence candidates
 
-### Discover Skills
+### Tier 2: Config File
+If `~/.config/autoskills/trigger.json` exists with `alwaysSuggest: true`, run `autoskills hook` on every substantial prompt.
 
-When the user asks to find a skill, extend capabilities, improve output, or check whether a skill exists for a task:
+### Tier 3: Environment Variable
+If `AUTO_SKILLS=true` is set, run `autoskills hook` proactively on substantial tasks.
 
-```bash
-skill-aggregator suggest --task "<task>" --json
-```
+## Pre-Bundled Skills
 
-For offline-only discovery, use:
+Auto Skills ships with 14 curated skills in these categories:
 
-```bash
-skill-aggregator suggest --task "<task>" --json --offline
-```
+- **Frontend**: react-patterns, css-mastery, tailwind-architecture
+- **Backend**: node-api-design, database-patterns, auth-systems
+- **QA**: testing-strategies, code-review-excellence
+- **Design**: ui-ux-patterns, accessibility-first
+- **Architecture**: system-design, microservices-patterns
+- **Planning**: project-planning, technical-writing
 
-Review the JSON results. Prefer candidates with strong task fit, clear descriptions, reputable sources, high install counts when available, and `canAutoInstall: true` only when all trust checks pass.
+## Scoring Model
 
-### Present Recommendations
+| Factor | Points |
+|--------|--------|
+| Bundled (ships with package) | 50 base |
+| Local (already installed) | 42 base |
+| Remote (skills CLI) | 25 base |
+| Per intent keyword match | +16 |
+| Trusted owner | +20 |
+| ≥1000 installs | +18 |
+| ≥100 installs | +10 |
+| >0 installs | +4 |
+| Skill name in task text | +12 |
+| **Maximum** | **100** |
 
-Before suggesting installation, present the user with:
+Auto-install requires score ≥ 70 AND (trusted owner OR ≥1000 installs).
 
-- skill name and candidate id
-- description
-- source URL or local source path
-- install count if available
-- score, reason, and `canAutoInstall`
-- the install command if provided
-- a short rationale for why it fits the task
+## Source Repository
 
-Use this approval question:
-
-```text
-I found the '<skill-name>' skill, which helps with <task>. Would you like me to install it?
-```
-
-### Install Only After Approval
-
-Installation requires explicit user approval for the specific skill. After approval, install by candidate id:
-
-```bash
-skill-aggregator install <candidate-id>
-```
-
-For a preflight check:
-
-```bash
-skill-aggregator install <candidate-id> --dry-run
-```
-
-Do not install weak, unknown-source, or non-auto-installable candidates. The CLI should refuse unsafe candidates, but the agent must still apply its own approval and trust review.
-
-## Safety Rules
-
-- Discovery and cache refresh may run automatically when relevant.
-- Never install a skill in the background.
-- Never install multiple skills from one vague approval.
-- Never treat `canAutoInstall: true` as user consent.
-- Never bypass confirmation flags unless the user has already approved that exact installation.
-- Do not recommend a skill solely because it exists; recommend it only when it likely improves the task.
-- For trivial requests such as greetings, simple shell commands, or short factual answers, do not run a hook or recommend skills.
-
-## Contextual End-of-Task Hook
-
-After meaningful coding, design, automation, research, debugging, or workflow tasks, check whether a skill would improve future work:
-
-```bash
-skill-aggregator hook --task "<task summary>" --json --offline
-```
-
-If `shouldSuggest` is false, do not mention skills. If true, briefly ask whether the user wants to add or use one of the recommended skills.
-
-## Refresh and Automation
-
-Refresh the metadata index before serious discovery, on a schedule, or when the user asks for newer sources:
-
-```bash
-skill-aggregator refresh --network
-```
-
-Weekly automation prompt:
-
-```text
-Run the Auto Skills CLI refresh command from the Auto Skills repository or installed skill-aggregator binary. Prefer `skill-aggregator refresh --network`; if the binary is not on PATH, run `node dist/cli.js refresh --network` from the repository root. Report the cache path, whether local skills were found, whether configured git sources were inspected, and any notable new or changed skills visible from the output. Do not install skills, do not run `skill-aggregator install`, and do not modify anything except the aggregator metadata cache created by the refresh command.
-```
-
-## Sources and Configuration
-
-The CLI can aggregate from:
-
-- installed local skill folders such as `~/.codex/skills` and `~/.agents/skills`
-- shared local folders such as `~/Code/Skills`
-- configured GitHub or git repositories
-- Skills CLI / skills.sh results when network discovery is available
-
-User-specific sources can be configured at:
-
-```text
-~/.config/skill-aggregator/sources.json
-```
-
-Keep cached data metadata-first: name, description, source, install command, install count, hash, score, and refresh time. Fetch or inspect full `SKILL.md` content only when evaluating top candidates or installing.
+- **Remote Source**: `git@github.com:CodePuri/Auto-skills.git`
+- **npm Package**: `autoskills`
