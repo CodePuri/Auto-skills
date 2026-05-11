@@ -1,309 +1,416 @@
-```text
-     _   _   _ _____ ___    ____  _  _____ _     _     ____  
-    / \ | | | |_   _/ _ \  / ___|| |/ /_ _| |   | |   / ___| 
-   / _ \| | | | | || | | | \___ \| ' / | || |   | |   \___ \ 
-  / ___ \ |_| | | || |_| |  ___) | . \ | || |___| |___ ___) |
- /_/   \_\___/  |_| \___/  |____/|_|\_\___|_____|_____|____/ 
-```
-
-# Auto Skills
-
-**Plug-and-play agent intelligence.** Pre-seeded with 14 core skills across frontend, backend, QA, design, architecture, and planning. Auto-discovers and installs skills from skills.sh, skillsmp.com, and community registries.
+![Auto Skills — Vaporwave Terminal](https://raw.githubusercontent.com/CodePuri/Auto-skills/main/.github/banner.svg)
 
 <p align="center">
-  <a href="#-quick-start"><b>Quick Start</b></a> •
-  <a href="#-commands"><b>Commands</b></a> •
-  <a href="#-how-it-works"><b>How It Works</b></a> •
-  <a href="#-trigger-system"><b>Trigger System</b></a> •
-  <a href="#-agent-integration"><b>Agent Integration</b></a> •
-  <a href="#%EF%B8%8F-safety--trust"><b>Safety & Trust</b></a>
+
+![npm version](https://img.shields.io/npm/v/autoskills?color=%23FF6EC7&label=npm&style=for-the-badge)
+![Node](https://img.shields.io/badge/node-%3E%3D20-00FFFF?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-7B68EE?style=for-the-badge)
+![TypeScript](https://img.shields.io/badge/TypeScript-ES2022-00FFFF?style=for-the-badge)
+![Build](https://img.shields.io/badge/build-passing-39FF14?style=for-the-badge)
+
 </p>
 
 ---
 
-## 🚀 Quick Start
+## █ OVERVIEW
+
+**Auto Skills** is a plug-and-play CLI that transforms your AI agent into an expert across every domain. No manual skill hunting. No copy-paste. Just run it and your agent knows more.
+
+It ships with **14 pre-bundled skills** covering frontend, backend, QA, design, architecture, and planning — and auto-discovers hundreds more from [skills.sh](https://skills.sh) and [skillsmp.com](https://skillsmp.com).
+
+```
+  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+  ▓  npm install -g autoskills                  ▓
+  ▓  autoskills suggest --task "your task"     ▓
+  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+```
+
+---
+
+## ██ QUICK START
 
 ```bash
-# Install globally (recommended)
+# Install globally (one-time)
 npm install -g autoskills
 
-# Or run via npx (no install needed)
-npx autoskills doctor        # Health check
-npx autoskills init           # First-run setup wizard
-```
+# First-run setup — detects environment, registers all skills
+autoskills init
 
-```bash
-# Discover skills for a task
+# Discover what your agent should know
 autoskills suggest --task "build a React dashboard with Node.js and PostgreSQL"
 
-# List all cached/bundled skills
+# See everything that's available
 autoskills list
 
-# Install a skill (safety-gated)
-autoskills install <candidate-id> -y
+# Health check
+autoskills doctor
 ```
 
 ---
 
-## 📦 What is Auto Skills?
+## ██ EXAMPLE OUTPUT
 
-Auto Skills turns your AI agent into an expert across every domain. Instead of manually adding skills, it:
+### Suggest
+```
+$ autoskills suggest --task "react performance testing" --offline
 
-1. **Ships with 14 pre-bundled skills** covering frontend, backend, QA, design, architecture, and planning
-2. **Auto-discovers** relevant skills from local `~/.codex/skills`, `~/.agents/skills`, and remote registries
-3. **Scores and ranks** each skill by intent matching + trust signals (install count, owner reputation)
-4. **Installs safely** — only auto-installs skills that pass a confidence threshold (score ≥ 70, trusted owner or ≥1K installs)
-5. **Frontloads** relevant skill instructions into your agent's context when you use the `auto skills:` prefix
+     _   _   _ _____ ___    ____  _  _____ _     _     ____
+    / \ | | | |_   _/ _ \  / ___|| |/ /_ _| |   | |   / ___|
+   / _ \| | | | | || | | | \___ \| ' / | || |   | |   \___ \
+  / ___ \ |_| | | || |_| |  ___) | . \ | || |___| |___ ___) |
+ /_/   \_\___/  |_| \___/  |____/|_|\_\___|_____|_____|____/
 
-The result: your agent has instant access to best practices, patterns, and workflows for whatever task you throw at it.
+█ Skills Found for: "react performance testing" █ 12 candidates
+
+╭──────────────────────────────────────────────────────╮
+│ react-patterns       █████████░░ 82   █ PRE-LOADED  │
+│ │  React best practices, hooks, performance          │
+│ │  reason: pre-bundled; 2 intent keyword matches     │
+╰──────────────────────────────────────────────────────╯
+
+╭──────────────────────────────────────────────────────╮
+│ testing-strategies   ███████░░░ 66   █ PRE-LOADED    │
+│ │  Unit tests, integration, E2E, TDD approach        │
+│ │  reason: pre-bundled; 1 intent keyword match      │
+╰──────────────────────────────────────────────────────╯
+```
+
+### List
+```
+$ autoskills list
+
+┌──────────────────────────┬──────────┬──────────────┬────────────────────────┐
+│ Skill                    │ Score    │ Status       │ Trust                  │
+├──────────────────────────┼──────────┼──────────────┼────────────────────────┤
+│ react-patterns           │ ████████ │ BUNDLED      │ bundled                │
+│ node-api-design          │ ████████ │ BUNDLED      │ bundled                │
+│ database-patterns        │ ████████ │ BUNDLED      │ bundled                │
+│ testing-strategies       │ ████████ │ BUNDLED      │ bundled                │
+│ ui-ux-patterns           │ ████████ │ BUNDLED      │ bundled                │
+│ accessibility-first      │ ████████ │ BUNDLED      │ bundled                │
+└──────────────────────────┴──────────┴──────────────┴────────────────────────┘
+
+  ▸ 14 bundled  ▸ 0 local  ▸ 0 remote  ▸ Total: 14
+```
+
+### Doctor
+```
+$ autoskills doctor
+
+╔════════  AUTO SKILLS DASHBOARD  ═════════╗
+║  Version         1.0.0                    ║
+║  Node            v24.1.0                  ║
+║  Platform        darwin                   ║
+║  Bundled Skills  ✓ 6 categories           ║
+║  Cache Entries   14                       ║
+║  Codex Skills    ✓ exists                 ║
+║  Agent Skills    ✓ exists                 ║
+╚══════════════════════════════════════════╝
+
+  ✓ All systems operational.
+```
 
 ---
 
-## 📋 Commands
+## ██ 14 BUNDLED SKILLS
 
-| Command | Description |
-|---------|-------------|
-| `autoskills` | Splash screen + help menu |
-| `autoskills init` | First-run setup wizard — detects environment, registers bundled skills |
-| `autoskills doctor` | Health check — Node version, paths, cache, connectivity |
-| `autoskills suggest --task "..."` | Full pipeline: search → score → rank → display |
-| `autoskills suggest --task "..." --json` | JSON output (for programmatic/agent use) |
-| `autoskills suggest --task "..." --offline` | Skip remote queries, use cache only |
-| `autoskills refresh` | Scan all sources and update cache |
-| `autoskills refresh --network` | Same + inspect remote git sources |
-| `autoskills install <id> [-y]` | Safety-gated install (needs `-y` to confirm) |
-| `autoskills install <id> --dry-run` | Preview install without executing |
-| `autoskills hook --task "..." [--json]` | Agent trigger check — returns JSON for AI consumption |
-| `autoskills list` | Show all cached/bundled skills in a formatted table |
-| `autoskills seed` | Register all 14 pre-bundled skills into cache |
-| `autoskills clean` | Clear all cached data |
-| `autoskills config` | Show current configuration (paths, trusted owners, thresholds) |
+Every skill ships with real, actionable content — not stubs.
 
----
-
-## 🔌 How It Works
-
-```
-               ┌──────────────────────┐
-               │  User runs suggest    │
-               │  --task "your task"   │
-               └──────────┬───────────┘
-                          │
-          ┌───────────────┼────────────────┐
-          ▼               ▼                ▼
-   ┌────────────┐  ┌───────────┐  ┌──────────────┐
-   │ PRE-BUNDLED│  │  LOCAL     │  │  REMOTE      │
-   │ skills/    │  │~/.codex/  │  │ npx skills   │
-   │ 14 skills  │  │~/.agent/  │  │ find         │
-   │ (shipped)  │  │installed  │  │ skills.sh    │
-   └─────┬──────┘  └─────┬─────┘  └──────┬───────┘
-         │               │              │
-         └───────────────┼──────────────┘
-                         ▼
-               ┌──────────────────┐
-               │  MERGE + SCORE   │
-               │  ↑               │
-               │  Intent match    │
-               │  ↑               │
-               │  Trust signals   │
-               │  ↑               │
-               │  Install counts  │
-               └────────┬─────────┘
-                        ▼
-               ┌──────────────────┐
-               │  RANKED RESULTS  │
-               │  Score ≥ 70:     │
-               │  AUTO-INSTALL    │
-               │  Score ≥ 50:     │
-               │  RECOMMEND       │
-               └────────┬─────────┘
-                        ▼
-               ┌──────────────────┐
-               │  FRONTLOAD INTO  │
-               │  AGENT CONTEXT   │
-               └──────────────────┘
-```
-
-### Deep Dive: The Suggestion Pipeline
-
-When you run `autoskills suggest --task "build a React dashboard with Node.js"`:
-
-1. **Tokenization**: The task is split into keywords → `[react, dashboard, node, js, build]`
-2. **Bundled search**: Scans all 14 pre-bundled SKILL.md files for keyword matches → finds react-patterns, node-api-design, css-mastery, database-patterns, system-design
-3. **Local search**: Scans `~/.codex/skills/` and `~/.agents/skills/` for any already-installed skills
-4. **Remote search (online only)**: Runs `npx skills find react dashboard node js build` to discover skills from the community registry
-5. **Scoring**: Each candidate gets a score (0-100) based on:
-   - Baseline: 50 (bundled), 42 (local), 25 (remote)
-   - +16 per keyword match between task and skill name/description
-   - +20 if from a trusted owner (vercel-labs, anthropics, microsoft, openai, codepuri)
-   - +18 if ≥1000 installs, +10 if ≥100, +4 if >0
-   - +12 if skill name appears verbatim in task text
-6. **Ranking**: Top 12 candidates shown, sorted by score descending
-7. **Output**: Beautiful vaporwave-styled terminal output or machine-readable JSON
+| # | Skill | Category | What It Covers |
+|---|-------|----------|---------------|
+| 1 | `react-patterns` | Frontend | Hooks, state management, TanStack Query, performance |
+| 2 | `css-mastery` | Frontend | Flexbox, Grid, animations, CUBE CSS, logical properties |
+| 3 | `tailwind-architecture` | Frontend | Design tokens, component extraction, JIT, dark mode |
+| 4 | `node-api-design` | Backend | REST, middleware, error handling, Zod validation, security |
+| 5 | `database-patterns` | Backend | Indexing, migrations, PgBouncer, N+1 avoidance, Redis caching |
+| 6 | `auth-systems` | Backend | JWT RS256, OAuth2/PKCE, RBAC, bcrypt, session rotation |
+| 7 | `testing-strategies` | QA | Test pyramid, Vitest, Playwright, TDD, CI thresholds |
+| 8 | `code-review-excellence` | QA | What to check, feedback patterns, critical/should/nit taxonomy |
+| 9 | `ui-ux-patterns` | Design | Visual hierarchy, F/Z-pattern, design systems, WCAG color |
+| 10 | `accessibility-first` | Design | WCAG AA, semantic HTML, ARIA, keyboard nav, reduced motion |
+| 11 | `system-design` | Architecture | Scalability, CQRS, event sourcing, CDN, circuit breakers |
+| 12 | `microservices-patterns` | Architecture | Bounded contexts, Saga, service mesh, blue-green, Observability |
+| 13 | `project-planning` | Planning | MoSCoW, planning poker, burndown, risk matrix, tech debt 20% rule |
+| 14 | `technical-writing` | Planning | README structure, JSDoc, Mermaid diagrams, Markdown best practices |
 
 ---
 
-## 🎯 Trigger System (AI Agent Integration)
+## ██ COMMANDS
 
-Auto Skills supports a **three-tier trigger system** that lets AI agents automatically discover and load relevant skills.
-
-### Tier 1: Prompt Prefix (Zero Config)
-
-```
-USER: auto skills: build a fullstack dashboard with React frontend, 
-Node.js backend, PostgreSQL, and WebSocket real-time updates
-
-AGENT: ✓ Detected "auto skills:" prefix
-       ✓ Runs: autoskills suggest --task "build a fullstack dashboard..."
-       ✓ Found 8 relevant skills
-       ✓ Frontloading react-patterns, node-api-design, postgres-optimization...
-       ✓ Let's build this!
-```
-
-Just start your prompt with `auto skills:` and your agent will automatically:
-1. Run `autoskills hook --task "<rest>" --json` to discover relevant skills
-2. Auto-install high-confidence matches
-3. Load all relevant skill instructions into context
-
-### Tier 2: Configuration File
-
-Create `~/.config/autoskills/trigger.json`:
-
-```json
-{
-  "alwaysSuggest": true,
-  "minScore": 55,
-  "allowedCategories": ["frontend", "backend", "architecture"]
-}
-```
-
-When this file exists, the agent runs `autoskills hook` on every substantial prompt to proactively suggest relevant skills.
-
-### Tier 3: Environment Variable
-
-```bash
-export AUTO_SKILLS=true
-```
-
-Same as Tier 2 but set globally. The agent detects this and runs `autoskills hook` proactively.
+| Command | Flags | Description |
+|---------|-------|-------------|
+| `autoskills` | | Splash screen + full help menu |
+| `autoskills init` | | First-run setup wizard |
+| `autoskills doctor` | | System health check |
+| `autoskills seed` | | Register all 14 bundled skills into cache |
+| `autoskills suggest` | `--task "..."` `--json` `--offline` `--llm` | Discover, score, rank, and display skills |
+| `autoskills refresh` | `[--network]` `[--dry-run]` | Scan all sources and update cache |
+| `autoskills install` | `<id>` `[-y]` `[--dry-run]` | Safety-gated skill installation |
+| `autoskills hook` | `--task "..."` `[--json]` | Agent trigger check — returns JSON |
+| `autoskills list` | `[--json]` | Formatted table of all cached skills |
+| `autoskills clean` | | Clear all cached data |
+| `autoskills config` | | Show current configuration |
+| `autoskills` | `--help` | Show usage and examples |
+| `autoskills` | `--version` | Show version number |
 
 ---
 
-## ⚙️ Configuration
+## ██ HOW IT WORKS — THE PIPELINE
 
-Default configuration is in `config/sources.json`:
-
-```json
-{
-  "localPaths": [
-    "~/.codex/skills",
-    "~/.agents/skills"
-  ],
-  "gitSources": [
-    "https://github.com/vercel-labs/skills"
-  ],
-  "trustedOwners": [
-    "vercel-labs", "anthropics", "microsoft", "openai", "codepuri"
-  ],
-  "autoInstall": {
-    "targetAgent": "codex",
-    "minimumScore": 70,
-    "minimumInstallsForPublic": 1000
-  }
-}
 ```
-
-Override any setting by creating `~/.config/autoskills/sources.json` with your preferences.
+                    ┌───────────────────────────────────┐
+                    │  autoskills suggest --task "..."  │
+                    └──────────────┬────────────────────┘
+                                   │
+           ┌───────────────────────┼───────────────────────┐
+           ▼                       ▼                       ▼
+    ┌─────────────┐         ┌─────────────┐         ┌────────────────┐
+    │  BUNDLED    │         │   LOCAL     │         │    REMOTE      │
+    │  skills/    │         │ ~/.codex/   │         │ npx skills find│
+    │  14 skills  │         │ ~/.agents/  │         │ skills.sh      │
+    │  (shipped)  │         │ (installed)│         │ skillsmp.com   │
+    └──────┬──────┘         └──────┬──────┘         └───────┬────────┘
+           │                     │                        │
+           └─────────────────────┼────────────────────────┘
+                                 ▼
+                    ┌──────────────────────────┐
+                    │  SCORE EVERY CANDIDATE    │
+                    │  ├── Intent match (+16)  │
+                    │  ├── Trusted owner (+20) │
+                    │  ├── Install count       │
+                    │  └── Skill name (+12)    │
+                    └────────────┬─────────────┘
+                                 ▼
+                    ┌──────────────────────────┐
+                    │  RANK (top 12)          │
+                    │  ├── score ≥ 70 → AUTO │
+                    │  ├── score ≥ 50 → REC   │
+                    │  └── score < 50 → skip  │
+                    └────────────┬─────────────┘
+                                 ▼
+                    ┌──────────────────────────┐
+                    │  DISPLAY (vaporwave UI)  │
+                    │  └── OR JSON (--json)   │
+                    └──────────────────────────┘
+```
 
 ---
 
-## 🛡️ Safety & Trust
+## ██ SCORING MODEL
 
-### Scoring Model
+Every candidate is scored 0–100 based on:
 
 | Factor | Points |
 |--------|--------|
-| Bundled (shipped with package) | 50 base |
-| Local (already installed) | 42 base |
-| Remote (skills CLI, registry) | 25 base |
-| Per intent keyword match | +16 |
-| Trusted owner | +20 |
-| ≥1000 installs | +18 |
-| ≥100 installs | +10 |
-| >0 installs | +4 |
-| Skill name in task text | +12 |
-| **Maximum** | **100** |
-
-### Auto-Install Guardrails
-
-- **Scores ≥ 70**: Candidate is eligible for auto-install IF also from trusted owner OR has ≥1000 installs
-- **All other candidates**: Recommendation-only — user must approve explicitly
-- **Install command validation**: Only `npx skills add <repo> --skill <name> -g -a codex -y` is accepted
-- **`refresh` never installs** — only scans and caches
-- **`hook` never installs** — only suggests
-- **`-y` flag**: Only available for installs that pass the safety threshold
+| Pre-bundled with package | **50** base |
+| Already installed locally | **42** base |
+| Found via skills CLI | **25** base |
+| Per keyword match in name/description | **+16** |
+| From trusted owner | **+20** |
+| ≥1,000 installs | **+18** |
+| ≥100 installs | **+10** |
+| >0 installs | **+4** |
+| Skill name verbatim in task | **+12** |
 
 ---
 
-## 💻 Development
+## ██ SAFETY — INSTALL IS ALWAYS GUARDED
+
+**Auto-install requires ALL of:**
+1. Score ≥ **70**
+2. **AND** either a trusted owner (vercel-labs, anthropics, microsoft, openai, codepuri) **OR** ≥**1,000** installs
+
+**Hard blocks — always refused:**
+- `refresh` and `hook` never install (read-only)
+- Any install command not in the exact form: `npx skills add <repo> --skill <name> -g -a codex -y`
+- Local skills (bundled/local are reference-only)
+- Bypassing confirmation via environment variable
+
+**Install flow:**
+```
+autoskills install <id>         → BLOCKED (needs -y)
+autoskills install <id> -y     → BLOCKED (score too low or unknown source)
+autoskills install <id> -y     → PASSES threshold → INSTALLED
+```
+
+---
+
+## ██ TRIGGER SYSTEM — 3 TIERS
+
+Start your prompt with `auto skills:` and your agent auto-discovers relevant skills.
+
+```
+USER: auto skills: build a fullstack dashboard with React, Node, and PostgreSQL
+
+AGENT: ✓ Detected "auto skills:" prefix
+       ✓ Running autoskills hook --task "build a fullstack..."
+       ✓ Found: react-patterns, node-api-design, database-patterns, system-design
+       ✓ Frontloading 4 skills into context
+       → Building the dashboard...
+```
+
+**Tier 1 — Prefix** (zero config): `auto skills: ...`
+**Tier 2 — Config** (`~/.config/autoskills/trigger.json`): `{ "alwaysSuggest": true }`
+**Tier 3 — Env** (`export AUTO_SKILLS=true`)
+
+---
+
+## ██ AGENT INTEGRATION
+
+### For Codex / Claude / Cursor agents
+
+Add this to your agent instructions:
+
+```
+When the user starts a prompt with "auto skills:", immediately:
+1. Extract the task after the colon
+2. Run: autoskills hook --task "<task>" --json
+3. Present the top candidates (score ≥ 70)
+4. If approved: autoskills install <id> -y
+5. Load the skill file(s) into context before working
+
+When the user starts a prompt with "auto skills:", immediately run:
+  autoskills hook --task "..." --json
+
+Available commands:
+  autoskills init       # First-run setup
+  autoskills doctor     # Health check
+  autoskills seed       # Register 14 bundled skills
+  autoskills list       # Show all cached skills
+  autoskills clean      # Clear cache
+```
+
+### Environment variables
+
+| Variable | Purpose |
+|----------|---------|
+| `AUTO_SKILLS_CACHE` | Override cache file path |
+| `AUTO_SKILLS_OFFLINE=1` | Force offline — skip `npx skills find` |
+| `AUTO_SKILLS_LLM_COMMAND` | External LLM for semantic reranking |
+| `AUTO_SKILLS=true` | Tier-3 trigger — proactive hook on every task |
+
+---
+
+## ██ CONFIGURATION
+
+Default config: `config/sources.json` in the package
+
+```json
+{
+  "localPaths": ["~/.codex/skills", "~/.agents/skills"],
+  "gitSources": ["https://github.com/vercel-labs/skills"],
+  "trustedOwners": ["vercel-labs", "anthropics", "microsoft", "openai", "codepuri"],
+  "autoInstall": { "minimumScore": 70, "minimumInstallsForPublic": 1000 }
+}
+```
+
+Override: create `~/.config/autoskills/sources.json`
+
+---
+
+## ██ DEVELOPMENT
 
 ```bash
 # Clone
 git clone git@github.com:CodePuri/Auto-skills.git
 cd Auto-skills
 
-# Install dependencies
+# Install
 npm install
 
 # Build
 npm run build
 
 # Test
-node dist/cli.js doctor
 node dist/cli.js seed
-node dist/cli.js suggest --task "test" --json --offline
+node dist/cli.js doctor
+node dist/cli.js suggest --task "react testing" --json --offline
+node dist/cli.js hook --task "hello" --json
+node dist/cli.js hook --task "build a dashboard" --json
 ```
 
 ### Project Structure
 
 ```
 src/
-  cli.ts              # Entry point, command dispatch
-  types.ts             # Shared TypeScript interfaces
+  cli.ts              # Command dispatch, async entry point
+  types.ts            # Candidate, Cache, Config interfaces
   core/
-    config.ts          # Configuration loading
-    cache.ts           # Cache read/write
-    scanner.ts         # SKILL.md file discovery
-    ranker.ts          # Scoring, dedup, reranking
-    registrar.ts       # Remote registry queries
-    installer.ts       # Safe install execution
+    config.ts         # Merge default + user config
+    cache.ts          # JSON read/write with temp fallback
+    scanner.ts        # SKILL.md discovery (bundle + local)
+    ranker.ts         # Scoring, dedup, merge, LLM rerank
+    registrar.ts      # npx skills find + registry queries
+    installer.ts      # Validate + execute install
   ui/
-    splash.ts          # Vaporwave ASCII art, help menu
-    box.ts             # Boxen wrappers
-    table.ts           # CLI table rendering
+    splash.ts         # ASCII art, help menu, printCandidates
+    box.ts            # boxen wrappers (info/success/warning/error)
+    table.ts          # cli-table3 candidate table
 skills/
-  catalog.json         # Index of all pre-bundled skills
-  frontend/            # react-patterns, css-mastery, tailwind-architecture
-  backend/             # node-api-design, database-patterns, auth-systems
-  qa/                  # testing-strategies, code-review-excellence
-  design/              # ui-ux-patterns, accessibility-first
-  architecture/        # system-design, microservices-patterns
-  planning/            # project-planning, technical-writing
-config/
-  sources.json         # Default configuration
+  catalog.json        # Index of all bundled skills
+  frontend/           # react-patterns, css-mastery, tailwind-architecture
+  backend/            # node-api-design, database-patterns, auth-systems
+  qa/                 # testing-strategies, code-review-excellence
+  design/             # ui-ux-patterns, accessibility-first
+  architecture/       # system-design, microservices-patterns
+  planning/           # project-planning, technical-writing
+docs/
+  HANDOFF.md          # Paths, commands, automation, build/test
+  AUTOMATION.md       # Weekly refresh policy, 3-tier trigger, CI/CD
+  SECURITY.md         # Trust thresholds, command validation, checklist
 ```
 
 ---
 
-## 🔗 Links
+## ██ WEEKLY AUTOMATION
 
-- **GitHub**: [github.com/CodePuri/Auto-skills](https://github.com/CodePuri/Auto-skills)
+The automation runs every **Monday 09:00 Asia/Kolkata**:
+
+```bash
+node dist/cli.js refresh --network
+```
+
+- **Discovers only** — never installs anything
+- Writes updated cache to `~/.cache/autoskills/index.json`
+- Logs output to `~/.logs/autoskills-refresh.log`
+
+See `docs/AUTOMATION.md` for cron setup, monitoring, and recovery.
+
+---
+
+## ██ DOCUMENTATION
+
+| Doc | What It Covers |
+|-----|---------------|
+| `docs/HANDOFF.md` | Paths, commands, automation, build/test, npm publish |
+| `docs/AUTOMATION.md` | Weekly refresh policy, 3-tier trigger, CI/CD pipeline |
+| `docs/SECURITY.md` | Trust thresholds, command validation, safety checklist |
+
+---
+
+## ██ LINKS
+
+<p align="center">
+
+[![npm](https://img.shields.io/badge/npm-autoskills-FF6EC7?style=for-the-badge)](https://www.npmjs.com/package/autoskills)
+[![GitHub](https://img.shields.io/badge/GitHub-Auto--Skills-00FFFF?style=for-the-badge)](https://github.com/CodePuri/Auto-skills)
+[![PRs](https://img.shields.io/badge/PRs-welcome-39FF14?style=for-the-badge)](https://github.com/CodePuri/Auto-skills/pulls)
+
+</p>
+
 - **npm**: [autoskills](https://www.npmjs.com/package/autoskills)
+- **GitHub**: [github.com/CodePuri/Auto-skills](https://github.com/CodePuri/Auto-skills)
 - **Skills Registry**: [skills.sh](https://skills.sh)
 - **Skills Marketplace**: [skillsmp.com](https://skillsmp.com)
 
 ---
 
-## 📄 License
+<p align="center">
 
-MIT © [CodePuri](https://github.com/CodePuri)
+![Banner](https://raw.githubusercontent.com/CodePuri/Auto-skills/main/.github/banner.svg)
+
+**Plug-and-play agent intelligence.** Built with vaporwave aesthetics by [CodePuri](https://github.com/CodePuri).
+
+MIT License © 2026
+
+</p>
